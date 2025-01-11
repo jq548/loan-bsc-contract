@@ -36,7 +36,10 @@ contract Loan {
     event eventNewLoan(uint256 loanId, uint256 duration, uint256 start, uint256 amount, address loaner);
     event eventPayBack(uint256 loanId, uint256 amount, address loaner);
     event eventClear(uint256 loanId, uint256 amount, address loaner);
+    event eventProviderIncrease(uint256 amount, address provider);
+    event eventProviderRetrieve(uint256 amount, address provider);
     event eventIncreaseLiquidReward(uint256 amount, address provider);
+    event eventReleaseLiquidReward(uint256 amount, address provider);
 
     constructor() {
         addresses[0] = msg.sender;
@@ -123,6 +126,8 @@ contract Loan {
         require(amount > 0, "no reward");
         IERC20 usdt  = IERC20(addresses[2]);
         usdt.transfer(msg.sender, amount);
+        liquidReward[msg.sender] -= amount;
+        emit eventReleaseLiquidReward(amount, msg.sender);
     }
 
     function increaseLiquidReward(uint256 amount, address provider) public onlyCaller() {
@@ -136,6 +141,7 @@ contract Loan {
         require(erc20Token.transferFrom(msg.sender, address(this), amount));
         totalLiquidAmount += amount;
         liquidProviderAmount[msg.sender] += amount;
+        emit eventProviderIncrease(amount, msg.sender);
     }
 
     function retrieveUsdt() public {
@@ -144,6 +150,7 @@ contract Loan {
         require(erc20Token.transfer(msg.sender, amount));
         liquidProviderAmount[msg.sender] = 0;
         totalLiquidAmount -= amount;
+        emit eventProviderRetrieve(amount, msg.sender);
     }
 
     function clear(uint256 loanId) public onlyCaller() {

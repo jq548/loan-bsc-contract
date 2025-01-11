@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "./LP.sol";
+
 contract Loan {
 
     struct loan {
@@ -36,6 +38,7 @@ contract Loan {
     event eventPayRate(uint256 loanId, uint256 rate, uint256 stage, address loaner);
     event evntPayBack(uint256 loanId, uint256 rate, uint256 amount, address loaner);
     event eventClear(uint256 loanId, uint256 amount, address loaner);
+    event eventIncreaseLiquidReward(uint256 amount, address provider);
 
     constructor() {
         addresses[0] = msg.sender;
@@ -48,22 +51,6 @@ contract Loan {
         addresses[1] = caller;
         addresses[2] = usdt;
         addresses[3] = lp;
-    }
-
-    function addNewLoan(uint256 amount, uint256 stage, uint256 dayPerStage, uint256 loanRate, address loaner) public onlyCaller() {
-
-    }
-
-    function payLoanRate(uint256 loanId) public {
-        require(loans[loanId].loaner == msg.sender, "only loaner");
-    }
-
-    function payBack(uint256 loanId) public {
-        require(loans[loanId].loaner == msg.sender, "only loaner");
-    }
-
-    function clear(uint256 loanId) public onlyCaller() {
-
     }
 
     function transferOwner(address owner) public onlyOwner() {
@@ -82,15 +69,50 @@ contract Loan {
         addresses[3] = lp;
     }
 
-    function extractAllCoin() public onlyOwner() {
+    function addNewLoan(uint256 amount, uint256 stage, uint256 dayPerStage, uint256 loanRate, address loaner) public onlyCaller() returns (uint256) {
+        uint256 id = loanCount;
+        loan memory l = loan(
+            amount,
+            stage,
+            dayPerStage,
+            loanRate,
+            0,
+            loaner
+        );
+        loans[id] = l;
+        loanCount += 1;
+        emit eventNewLoan(id, amount, stage, dayPerStage, loanRate, loaner);
+        return id;
+    }
 
+    function payLoanRate(uint256 loanId, uint256 stage) public {
+        require(loans[loanId].loaner == msg.sender, "only loaner");
+    }
+
+    function payBack(uint256 loanId) public {
+        require(loans[loanId].loaner == msg.sender, "only loaner");
     }
 
     function maxExchangeLpUsdt(bool forward) public view returns (uint256) {
-        return 0;
+        if (forward) {
+            return 1000000000000000000000000;
+        } else {
+            IERC20 usdt  = IERC20(addresses[2]);
+            return usdt.balanceOf(address(this));
+        }
     }
 
     function exchangeLpUsdt(bool forward, uint256 amount) public {
+        require(amount < maxExchangeLpUsdt(forward), "too much");
+        LPToken lp = LPToken(addresses[3]);
+        IERC20 usdt  = IERC20(addresses[2]);
+        if (forward) {
+            lp.burnFrom(msg.sender, amount);
+            require(usdt.transfer(msg.sender, amount));
+        } else {
+            lp.mint(msg.sender, amount);
+            require(usdt.transferFrom(msg.sender, address(this), amount));
+        }
 
     }
 
@@ -99,10 +121,40 @@ contract Loan {
     }
 
     function releaseLiquidReward() public {
-
+        uint256 amount = liquidReward[msg.sender];
+        require(amount > 0, "no reward");
+        IERC20 usdt  = IERC20(addresses[2]);
+        usdt.transfer(msg.sender, amount);
     }
 
-    function increaseLiquidReward() public onlyCaller() {
+    function increaseLiquidReward(uint256 amount, address provider) public onlyCaller() {
+        require(amount > 0, "increase nothing");
+        liquidReward[provider] += amount;
+        emit eventIncreaseLiquidReward(amount, provider);
+    }
+
+    function provideUsdt(uint256 amount) public {
+        IERC20 erc20Token = IERC20(addresses[2]);
+        require(erc20Token.transferFrom(msg.sender, address(this), amount));
+        totalLiquidAmount += amount;
+        liquidProviderAmount[msg.sender] += amount;
+    }
+
+    function retrieveUsdt() public {
+        IERC20 erc20Token = IERC20(addresses[2]);
+        uint256 amount = liquidProviderAmount[msg.sender];
+        require(erc20Token.transfer(msg.sender, amount));
+        liquidProviderAmount[msg.sender] = 0;
+        totalLiquidAmount -= amount;
+    }
+
+    function clear(uint256 loanId) public onlyCaller() {
+        require(loanId < loanCount);
+        loans[loanId].status = 2;
+        emit eventClear(loanId, loans[loanId].amount, loans[loanId].loaner);
+    }
+
+    function extractAllCoin() public onlyOwner() {
 
     }
 

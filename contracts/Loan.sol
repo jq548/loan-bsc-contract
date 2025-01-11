@@ -7,9 +7,8 @@ contract Loan {
 
     struct loan {
         uint256 amount;
-        uint256 stage;
-        uint256 dayPerStage;
-        uint256 loanRate;
+        uint256 duration;
+        uint256 start;
         uint256 status; // 0 normal, 1 payed back, 2 cleard
         address loaner;
     }
@@ -34,9 +33,8 @@ contract Loan {
         _;
     }
 
-    event eventNewLoan(uint256 loanId, uint256 amount, uint256 stage, uint256 dayPerStage, uint256 loanRate, address loaner);
-    event eventPayRate(uint256 loanId, uint256 rate, uint256 stage, address loaner);
-    event evntPayBack(uint256 loanId, uint256 rate, uint256 amount, address loaner);
+    event eventNewLoan(uint256 loanId, uint256 duration, uint256 start, uint256 amount, address loaner);
+    event eventPayBack(uint256 loanId, uint256 amount, address loaner);
     event eventClear(uint256 loanId, uint256 amount, address loaner);
     event eventIncreaseLiquidReward(uint256 amount, address provider);
 
@@ -69,28 +67,29 @@ contract Loan {
         addresses[3] = lp;
     }
 
-    function addNewLoan(uint256 amount, uint256 stage, uint256 dayPerStage, uint256 loanRate, address loaner) public onlyCaller() returns (uint256) {
+    function addNewLoan(uint256 amount, uint256 duration, address loaner) public onlyCaller() returns (uint256) {
         uint256 id = loanCount;
+        uint256 current = block.timestamp;
         loan memory l = loan(
             amount,
-            stage,
-            dayPerStage,
-            loanRate,
+            duration,
+            current,
             0,
             loaner
         );
         loans[id] = l;
         loanCount += 1;
-        emit eventNewLoan(id, amount, stage, dayPerStage, loanRate, loaner);
+        emit eventNewLoan(id, duration, current, amount, loaner);
         return id;
-    }
-
-    function payLoanRate(uint256 loanId, uint256 stage) public {
-        require(loans[loanId].loaner == msg.sender, "only loaner");
     }
 
     function payBack(uint256 loanId) public {
         require(loans[loanId].loaner == msg.sender, "only loaner");
+        require(loans[loanId].status == 0, "not allowed status");
+        IERC20 usdt  = IERC20(addresses[2]);
+        require(usdt.transferFrom(msg.sender, address(this), loans[loanId].amount));
+        loans[loanId].status = 1;
+        emit eventPayBack(loanId, loans[loanId].amount, loans[loanId].loaner);
     }
 
     function maxExchangeLpUsdt(bool forward) public view returns (uint256) {
@@ -113,7 +112,6 @@ contract Loan {
             lp.mint(msg.sender, amount);
             require(usdt.transferFrom(msg.sender, address(this), amount));
         }
-
     }
 
     function releaseAbleLiquidReward(address provider) public view returns (uint256) {
@@ -150,12 +148,15 @@ contract Loan {
 
     function clear(uint256 loanId) public onlyCaller() {
         require(loanId < loanCount);
+        require(loans[loanId].status == 0);
+        require(loans[loanId].start + loans[loanId].duration > block.timestamp);
         loans[loanId].status = 2;
         emit eventClear(loanId, loans[loanId].amount, loans[loanId].loaner);
     }
 
-    function extractAllCoin() public onlyOwner() {
-
+    function extract(address token) public onlyOwner() {
+        IERC20 erc20Token = IERC20(token);
+        require(erc20Token.transfer(msg.sender, erc20Token.balanceOf(address(this))));
     }
 
 }

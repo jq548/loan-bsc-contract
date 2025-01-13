@@ -1,19 +1,18 @@
 {
   "name": "loan-bsc-contract",
   "version": "1.0.0",
-  "main": "index.js",
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deployTokenTestUSDT": "hardhat run scripts/deploy_usdt.js --network bsctest",
+    "deployTokenTestLP": "hardhat run scripts/deploy_lp.js --network bsctest",
+    "deployTestLoan": "hardhat run scripts/deploy_loan.js --network bsctest",
+    "upgradeTestLoan": "hardhat run scripts/upgrade_loan.js --network bsctest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.22.17"
-  },
-  "dependencies": {
-    "@openzeppelin/contracts": "^4.0.0"
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@openzeppelin/contracts": "^4.8.0",
+    "@openzeppelin/hardhat-upgrades": "^2.3.1",
+    "dotenv": "^16.0.1",
+    "hardhat": "^2.10.1"
   }
 }

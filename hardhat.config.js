@@ -12,11 +12,6 @@ module.exports = {
     }
   },
   networks: {
-    ssctest: {
-      url: process.env.URL || "https://testnet-rpc.amstarscan.com",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [""],
-    },
     bsctest: {
       url: process.env.URL || "https://bsc-testnet.public.blastapi.io",
       accounts:
@@ -46,18 +41,10 @@ module.exports = {
     },
     customChains: [
       {
-        network: "ssctest",
-        chainId: 1138,
-        urls: {
-          apiURL: "https://testnet.amstarscan.com/api",
-          browserURL: "https://testnet.amstarscan.com/"
-        }
-      },
-      {
         network: "bsctest",
         chainId: 97,
         urls: {
-          apiURL: "https://api-testnet.bscscan.com/api",
+          apiURL: "https://bsc-testnet-rpc.publicnode.com",
           browserURL: "https://testnet.bscscan.com/"
         }
       },

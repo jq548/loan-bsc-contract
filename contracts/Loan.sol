@@ -14,7 +14,6 @@ contract Loan is Context {
         address loaner;
     }
 
-    uint256 loanCount;
     mapping (uint256 => loan) loans;
 
     mapping (uint256 => address) public addresses; // 0 owner, 1 caller, 2 usdt contract, 3 lp contract
@@ -70,8 +69,7 @@ contract Loan is Context {
         addresses[3] = lp;
     }
 
-    function addNewLoan(uint256 amount, uint256 duration, address loaner) public onlyCaller() returns (uint256) {
-        uint256 id = loanCount;
+    function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner) public onlyCaller() {
         uint256 current = block.timestamp;
         loan memory l = loan(
             amount,
@@ -81,9 +79,7 @@ contract Loan is Context {
             loaner
         );
         loans[id] = l;
-        loanCount += 1;
         emit eventNewLoan(id, duration, current, amount, loaner);
-        return id;
     }
 
     function payBack(uint256 loanId) public {
@@ -154,7 +150,6 @@ contract Loan is Context {
     }
 
     function clear(uint256 loanId) public onlyCaller() {
-        require(loanId < loanCount);
         require(loans[loanId].status == 0);
         require(loans[loanId].start + loans[loanId].duration > block.timestamp);
         loans[loanId].status = 2;

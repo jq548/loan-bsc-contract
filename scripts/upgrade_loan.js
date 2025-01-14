@@ -7,7 +7,7 @@ async function upgrade(oldLinearVesting) {
 }
 
 async function main() {
-    loan = await upgrade("0xA40607a2C0718F643aF69bD9891F0cB3A397eA93");
+    loan = await upgrade("0xD2616032e562D70dc0CEc32dC710A0483e0AC900");
 
     console.log("address: ", await loan.getAddress());
 }

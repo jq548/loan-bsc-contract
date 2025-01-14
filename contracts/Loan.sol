@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/utils/Context.sol";
 import "./LP.sol";
 
-contract Loan {
+contract Loan is Context {
 
     struct loan {
         uint256 amount;
@@ -41,17 +42,16 @@ contract Loan {
     event eventIncreaseLiquidReward(uint256 amount, address provider);
     event eventReleaseLiquidReward(uint256 amount, address provider);
 
-    constructor() {
-        addresses[0] = msg.sender;
-    }
-
-    function initialize(
+    function init(
+        address owner,
         address caller,
         address usdt,
-        address lp) public onlyOwner() {
-        addresses[1] = caller;
-        addresses[2] = usdt;
-        addresses[3] = lp;
+        address lp) public {
+            require(owner == address(0));
+            addresses[0] = owner;
+            addresses[1] = caller;
+            addresses[2] = usdt;
+            addresses[3] = lp;
     }
 
     function transferOwner(address owner) public onlyOwner() {

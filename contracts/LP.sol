@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract LPToken is ERC20, Ownable {
 
-    constructor(uint256 initialSupply) ERC20("MyToken", "MTK") {
+    constructor(uint256 initialSupply) ERC20("test LP", "tLP") {
         _mint(msg.sender, initialSupply);
     }
 

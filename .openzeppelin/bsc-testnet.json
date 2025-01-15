@@ -19,6 +19,11 @@
       "address": "0xD2616032e562D70dc0CEc32dC710A0483e0AC900",
       "txHash": "0x511af4a756839a3b8670bd87aeccafff06d40f2ecd3e1aab08e47afe44c58363",
       "kind": "transparent"
+    },
+    {
+      "address": "0x3a256d1667Fdf4a6CD271DEfE3354043028865d8",
+      "txHash": "0xee55e26ed9ca1c980a6561312f9e680dcea051ac938cd7aebb4dce7296c1fbdc",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -257,6 +262,438 @@
     "4cfcd58da3b1bfdbb0e4000f973873747dcbf175856889b0cc3fd45bdd3a7f2b": {
       "address": "0x7C5b8e55161Af07f6F07050969B0f5408997b50c",
       "txHash": "0x906be4f2154dfeb3efefb7af1a4240afc276006a42caf42ab23d95d1801e1d77",
+      "layout": {
+        "solcVersion": "0.8.0",
+        "storage": [
+          {
+            "label": "loans",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_uint256,t_struct(loan)925_storage)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:17"
+          },
+          {
+            "label": "addresses",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:19"
+          },
+          {
+            "label": "totalLiquidAmount",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:22"
+          },
+          {
+            "label": "liquidProviderAmount",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:23"
+          },
+          {
+            "label": "liquidReward",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:24"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(loan)925_storage)": {
+            "label": "mapping(uint256 => struct Loan.loan)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(loan)925_storage": {
+            "label": "struct Loan.loan",
+            "members": [
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "duration",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "start",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "status",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "loaner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "d1f2eedfa08e7fcccbb0c70a075b00253fb60ab1e060c1bdffdde78623a16be8": {
+      "address": "0xd7A292982B8b3a90E59952EEa76DC6111FAeF971",
+      "txHash": "0x0d93490258e282f80a2e104f8f1669f3910f3399e7ebd748db0769398e8c1971",
+      "layout": {
+        "solcVersion": "0.8.0",
+        "storage": [
+          {
+            "label": "loans",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_uint256,t_struct(loan)925_storage)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:17"
+          },
+          {
+            "label": "addresses",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:19"
+          },
+          {
+            "label": "totalLiquidAmount",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:22"
+          },
+          {
+            "label": "liquidProviderAmount",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:23"
+          },
+          {
+            "label": "liquidReward",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:24"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(loan)925_storage)": {
+            "label": "mapping(uint256 => struct Loan.loan)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(loan)925_storage": {
+            "label": "struct Loan.loan",
+            "members": [
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "duration",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "start",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "status",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "loaner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "72e05579ee17f7e67c450ff1c5d863e34998f06779ec73a8acede1c7b108f439": {
+      "address": "0xD0e0ABe7a39B14Eabb34d9aE238f3500Cd1264bE",
+      "txHash": "0x2787ff4c173be43a08b57074fe9f097d09cd004324fbad97e1b05181d7579f6a",
+      "layout": {
+        "solcVersion": "0.8.0",
+        "storage": [
+          {
+            "label": "loans",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_uint256,t_struct(loan)925_storage)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:17"
+          },
+          {
+            "label": "addresses",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:19"
+          },
+          {
+            "label": "totalLiquidAmount",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:22"
+          },
+          {
+            "label": "liquidProviderAmount",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:23"
+          },
+          {
+            "label": "liquidReward",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:24"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(loan)925_storage)": {
+            "label": "mapping(uint256 => struct Loan.loan)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(loan)925_storage": {
+            "label": "struct Loan.loan",
+            "members": [
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "duration",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "start",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "status",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "loaner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "422fa153b57294219a6ea0aaca601365632d4578d65b128daa40045851ecb835": {
+      "address": "0xFBa3ab71495360aEf88d97307e76E8422dA0F284",
+      "txHash": "0x48aa2b5ca397a7bc2b6c149fa0d7e00ef444fb5d421537bcbf53f325c5e26e74",
+      "layout": {
+        "solcVersion": "0.8.0",
+        "storage": [
+          {
+            "label": "loans",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_uint256,t_struct(loan)925_storage)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:17"
+          },
+          {
+            "label": "addresses",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:19"
+          },
+          {
+            "label": "totalLiquidAmount",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:22"
+          },
+          {
+            "label": "liquidProviderAmount",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:23"
+          },
+          {
+            "label": "liquidReward",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:24"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(loan)925_storage)": {
+            "label": "mapping(uint256 => struct Loan.loan)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(loan)925_storage": {
+            "label": "struct Loan.loan",
+            "members": [
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "duration",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "start",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "status",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "loaner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "b031d35a543ddc041cf99c513656a03df05fe07a7e43c0be61e9583fb9296a62": {
+      "address": "0x0bF0786FAF0C3d8B6cf9263B2C0100e787358000",
+      "txHash": "0x9509622e674baf649d271ac715996a5d8203a93e224f3197c56a9ab94ef6b7b4",
       "layout": {
         "solcVersion": "0.8.0",
         "storage": [

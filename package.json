@@ -6,7 +6,9 @@
     "deployTokenTestUSDT": "hardhat run scripts/deploy_usdt.js --network bsctest",
     "deployTokenTestLP": "hardhat run scripts/deploy_lp.js --network bsctest",
     "deployTestLoan": "hardhat run scripts/deploy_loan.js --network bsctest",
-    "upgradeTestLoan": "hardhat run scripts/upgrade_loan.js --network bsctest"
+    "upgradeTestLoan": "hardhat run scripts/upgrade_loan.js --network bsctest",
+    "initTestLoan": "hardhat run scripts/init_loan.js --network bsctest",
+    "transferLpOwner": "hardhat run scripts/transfer_lp_owner.js --network bsctest"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",

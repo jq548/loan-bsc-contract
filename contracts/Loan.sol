@@ -14,7 +14,7 @@ contract Loan is Context {
         address loaner;
     }
 
-    mapping (uint256 => loan) loans;
+    mapping (uint256 => loan) public loans;
 
     mapping (uint256 => address) public addresses; // 0 owner, 1 caller, 2 usdt contract, 3 lp contract
 
@@ -46,7 +46,7 @@ contract Loan is Context {
         address caller,
         address usdt,
         address lp) public {
-            require(owner == address(0));
+            require(addresses[0] == address(0));
             addresses[0] = owner;
             addresses[1] = caller;
             addresses[2] = usdt;
@@ -70,6 +70,8 @@ contract Loan is Context {
     }
 
     function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner) public onlyCaller() {
+        require(loans[id].loaner == address(0), "loan already exist");
+        LPToken lp  = LPToken(addresses[3]);
         uint256 current = block.timestamp;
         loan memory l = loan(
             amount,
@@ -79,6 +81,7 @@ contract Loan is Context {
             loaner
         );
         loans[id] = l;
+        lp.mint(msg.sender, amount);
         emit eventNewLoan(id, duration, current, amount, loaner);
     }
 

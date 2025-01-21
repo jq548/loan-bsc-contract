@@ -49,8 +49,9 @@ contract Loan is Context {
     event eventProviderAdd(uint256 id, uint256 duration, uint256 start, uint256 amount, address provider);
     event eventProviderRedeem(uint256 id, uint256 amount, address provider, uint256 fee);
     event eventIncreaseLiquidReward(uint256 amount, address provider);
-    event eventIncreaseLiquidRewardBath(uint256[] amounts, address[] providers);
+    event eventIncreaseLiquidRewardBath(uint256[] ids, uint256[] amounts, address[] providers);
     event eventReleaseLiquidReward(uint256 amount, address provider, uint256 fee);
+    event eventExchangeLpToUsdt(bool forward, uint256 amount, address caller);
 
     function init(
         address owner,
@@ -133,6 +134,7 @@ contract Loan is Context {
             lp.mint(msg.sender, amount);
             require(usdt.transferFrom(msg.sender, address(this), amount));
         }
+        emit eventExchangeLpToUsdt(forward, amount, msg.sender);
     }
 
     function releaseAbleLiquidReward(address provider) public view returns (uint256) {
@@ -154,12 +156,12 @@ contract Loan is Context {
         liquidReward[provider] += amount;
         emit eventIncreaseLiquidReward(amount, provider);
     }
-    function increaseLiquidRewardBatch(uint256[] memory amounts, address[] memory providers) public onlyCaller() {
+    function increaseLiquidRewardBatch(uint256[] memory ids, uint256[] memory amounts, address[] memory providers) public onlyCaller() {
         require(amounts.length == providers.length, "increase nothing");
         for (uint256 i=0; i<amounts.length; i++) {
             liquidReward[providers[i]] += amounts[i];
         }
-        emit eventIncreaseLiquidRewardBath(amounts, providers);
+        emit eventIncreaseLiquidRewardBath(ids, amounts, providers);
     }
 
     function provideUsdt(uint256 amount, uint256 duration) public {

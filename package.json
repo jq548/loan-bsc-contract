@@ -8,7 +8,8 @@
     "deployTestLoan": "hardhat run scripts/deploy_loan.js --network bsctest",
     "upgradeTestLoan": "hardhat run scripts/upgrade_loan.js --network bsctest",
     "initTestLoan": "hardhat run scripts/init_loan.js --network bsctest",
-    "transferLpOwner": "hardhat run scripts/transfer_lp_owner.js --network bsctest"
+    "transferLpOwner": "hardhat run scripts/transfer_lp_owner.js --network bsctest",
+    "trasnferERC20": "hardhat run scripts/transfer_erc20.js --network bsctest"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",

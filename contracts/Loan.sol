@@ -165,7 +165,7 @@ contract Loan is Context {
     }
 
     function provideUsdt(uint256 amount, uint256 duration) public {
-        require(amount > params[3] && amount < params[4], "exceed limit");
+        require(amount >= params[3] && amount <= params[4], "exceed limit");
         IERC20 erc20Token = IERC20(addresses[2]);
         require(erc20Token.transferFrom(msg.sender, address(this), amount));
         uint256 newId = params[1];
@@ -178,7 +178,7 @@ contract Loan is Context {
             msg.sender
         );
         liquidProvides[newId] = newlp;
-        params[1] = current + 1;
+        params[1] = newId + 1;
         params[0] += amount;
         emit eventProviderAdd(current, duration, current, amount, msg.sender);
     }

@@ -101,7 +101,7 @@ contract Loan is Context {
             interestAmount
         );
         loans[id] = l;
-        lp.mint(msg.sender, amount);
+        lp.mint(loaner, amount);
         emit eventNewLoan(id, duration, current, amount, loaner, releaseAmount, interestAmount);
     }
 

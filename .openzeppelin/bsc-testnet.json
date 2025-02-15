@@ -1295,6 +1295,170 @@
         },
         "namespaces": {}
       }
+    },
+    "fdafe9300e4c68a55009fd4c75d5f1636c30ec1486a705267f255f44f7e9f23a": {
+      "address": "0x2882dd113F93D7F1BD77151057E299E47615e9dC",
+      "txHash": "0x0ea41e69ac8f0e486e51c07c2cc64ebcb46cc683b2d5203610c0d1d5740a7a2a",
+      "layout": {
+        "solcVersion": "0.8.0",
+        "storage": [
+          {
+            "label": "loans",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_uint256,t_struct(loan)929_storage)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:27"
+          },
+          {
+            "label": "addresses",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:29"
+          },
+          {
+            "label": "params",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:31"
+          },
+          {
+            "label": "liquidProvides",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_uint256,t_struct(liquidProvide)940_storage)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:33"
+          },
+          {
+            "label": "liquidReward",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "Loan",
+            "src": "contracts/Loan.sol:34"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(liquidProvide)940_storage)": {
+            "label": "mapping(uint256 => struct Loan.liquidProvide)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(loan)929_storage)": {
+            "label": "mapping(uint256 => struct Loan.loan)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(liquidProvide)940_storage": {
+            "label": "struct Loan.liquidProvide",
+            "members": [
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "duration",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "start",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "status",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "provider",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_struct(loan)929_storage": {
+            "label": "struct Loan.loan",
+            "members": [
+              {
+                "label": "loanAmount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "duration",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "start",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "status",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "loaner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "releaseAmount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "interestAmount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "6"
+              }
+            ],
+            "numberOfBytes": "224"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {}
+      }
     }
   }
 }

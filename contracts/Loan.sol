@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Context.sol";
-import "./LP.sol";
+import "./DINAR.sol";
 
 contract Loan is Context {
 
@@ -10,10 +10,14 @@ contract Loan is Context {
         uint256 loanAmount;
         uint256 duration;
         uint256 start;
-        uint256 status; // 0 normal, 1 payed back, 2 cleard
+        uint256 status; // 0 normal, 1 payed back, 2 cleared, 3 finish cleared
         address loaner;
         uint256 releaseAmount;
         uint256 interestAmount;
+        string contractNumber;
+        string aleoAddress;
+        uint256 aleoAmount;
+        uint256 aleoPrice;
     }
 
     struct liquidProvide {
@@ -22,13 +26,27 @@ contract Loan is Context {
         uint256 start;
         uint256 status; // 0 normal, 1 redeemed
         address provider;
+        string contractNumber;
     }
 
     mapping (uint256 => loan) public loans;
 
-    mapping (uint256 => address) public addresses; // 0 owner, 1 caller, 2 usdt contract, 3 lp contract
+    // 0 owner
+    // 1 caller
+    // 2 usdt contract
+    // 3 dinar contract
+    mapping (uint256 => address) public addresses; 
 
-    mapping (uint256 => uint256 ) public params; // 0 total Liquid Amount, 1 total Liquid Record Count, 2 withraw reward fee, 3 min provide, 4 max provide
+    // 0 total Liquid Amount
+    // 1 total Liquid Record Count
+    // 2 withraw reward fee
+    // 3 min provide
+    // 4 max provide
+    // 5 timestamp of last create loan (today at 00:00:00)
+    // 6 count of loans were created today
+    // 7 timestamp of last create liquidity (today at 00:00:00)
+    // 8 count of liquidities were created today
+    mapping (uint256 => uint256 ) public params; 
 
     mapping (uint256 => liquidProvide) public liquidProvides;
     mapping (address => uint256) public liquidReward;
@@ -43,26 +61,68 @@ contract Loan is Context {
         _;
     }
 
-    event eventNewLoan(uint256 loanId, uint256 duration, uint256 start, uint256 loanAmount, address loaner, uint256 releaseAmount, uint256 interestAmount);
-    event eventPayBack(uint256 loanId, uint256 amount, address loaner);
-    event eventClear(uint256 loanId, uint256 amount, address loaner);
-    event eventProviderAdd(uint256 id, uint256 duration, uint256 start, uint256 amount, address provider);
-    event eventProviderRedeem(uint256 id, uint256 amount, address provider, uint256 fee);
-    event eventIncreaseLiquidReward(uint256 amount, address provider);
-    event eventIncreaseLiquidRewardBath(uint256[] ids, uint256[] amounts, address[] providers);
-    event eventReleaseLiquidReward(uint256 amount, address provider, uint256 fee);
-    event eventExchangeLpToUsdt(bool forward, uint256 amount, address caller);
+    event eventNewLoan(
+        uint256 loanId, 
+        uint256 duration, 
+        uint256 start, 
+        uint256 loanAmount, 
+        address loaner, 
+        uint256 releaseAmount, 
+        uint256 interestAmount, 
+        string contractNumber,
+        string aleoAddress,
+        uint256 aleoAmount,
+        uint256 aleoPrice);
+    event eventPayBack(
+        uint256 loanId, 
+        uint256 amount, 
+        address loaner);
+    event eventClear(
+        uint256 loanId, 
+        uint256 amount, 
+        address loaner);
+    event eventFinishClear(
+        uint256 id,
+        uint256 loanAmount,
+        uint256 clearAmount);
+    event eventProviderAdd(
+        uint256 id, 
+        uint256 duration, 
+        uint256 start, 
+        uint256 amount, 
+        address provider,
+        string contractNumber);
+    event eventProviderRedeem(
+        uint256 id, 
+        uint256 amount, 
+        address provider, 
+        uint256 fee);
+    event eventIncreaseLiquidReward(
+        uint256 amount, 
+        address provider);
+    event eventIncreaseLiquidRewardBath(
+        uint256[] ids, 
+        uint256[] amounts, 
+        address[] providers);
+    event eventReleaseLiquidReward(
+        uint256 amount, 
+        address provider, 
+        uint256 fee);
+    event eventExchangeDinarToUsdt(
+        bool forward, 
+        uint256 amount, 
+        address caller);
 
     function init(
         address owner,
         address caller,
         address usdt,
-        address lp) public {
+        address dinar) public {
             require(addresses[0] == address(0));
             addresses[0] = owner;
             addresses[1] = caller;
             addresses[2] = usdt;
-            addresses[3] = lp;
+            addresses[3] = dinar;
     }
 
     function transferOwner(address owner) public onlyOwner() {
@@ -77,8 +137,8 @@ contract Loan is Context {
         addresses[2] = usdt;
     }
 
-    function setLpContract(address lp) public onlyOwner() {
-        addresses[3] = lp;
+    function setDinarContract(address dinar) public onlyOwner() {
+        addresses[3] = dinar;
     }
 
     function setParams(uint256 key, uint256 value) public onlyCaller() {
@@ -86,55 +146,62 @@ contract Loan is Context {
         params[key] = value;
     }
 
-    function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner, uint256 interestAmount) public onlyCaller() {
+    function addNewLoan(
+        uint256 id,
+        uint256 amount, 
+        uint256 duration, 
+        address loaner, 
+        uint256 interestAmount, 
+        string calldata aleoAddress,
+        uint256 aleoAmount,
+        uint256 aleoPrice) public onlyCaller() {
         require(loans[id].loaner == address(0), "loan already exist");
-        LPToken lp  = LPToken(addresses[3]);
         uint256 current = block.timestamp;
         uint256 releaseAmount = amount - interestAmount;
-        loan memory l = loan(
+        string memory contractNumber = updateNextContractNumber(1);
+        loans[id] = loan(
             amount,
             duration,
             current,
             0,
             loaner,
             releaseAmount,
-            interestAmount
+            interestAmount,
+            contractNumber,
+            aleoAddress,
+            aleoAmount,
+            aleoPrice
         );
-        loans[id] = l;
-        lp.mint(loaner, amount);
-        emit eventNewLoan(id, duration, current, amount, loaner, releaseAmount, interestAmount);
+        DINARToken(addresses[3]).mint(loaner, amount);
+        emit eventNewLoan(id, duration, current, amount, loaner, releaseAmount, interestAmount, contractNumber, aleoAddress, aleoAmount, aleoPrice);
     }
 
     function payBack(uint256 loanId) public {
         require(loans[loanId].loaner == msg.sender, "only loaner");
         require(loans[loanId].status == 0, "not allowed status");
-        IERC20 usdt  = IERC20(addresses[2]);
-        require(usdt.transferFrom(msg.sender, address(this), loans[loanId].loanAmount));
+        DINARToken(addresses[3]).burnFrom(msg.sender, loans[loanId].loanAmount);
         loans[loanId].status = 1;
         emit eventPayBack(loanId, loans[loanId].loanAmount, loans[loanId].loaner);
     }
 
-    function maxExchangeLpUsdt(bool forward) public view returns (uint256) {
+    function maxExchangeDinarUsdt(bool forward) public view returns (uint256) {
         if (forward) {
-            return 1000000000000000000000000;
+            return IERC20(addresses[3]).balanceOf(address(this));
         } else {
-            IERC20 usdt  = IERC20(addresses[2]);
-            return usdt.balanceOf(address(this));
+            return IERC20(addresses[2]).balanceOf(address(this));
         }
     }
 
-    function exchangeLpUsdt(bool forward, uint256 amount) public {
-        require(amount < maxExchangeLpUsdt(forward), "too much");
-        LPToken lp = LPToken(addresses[3]);
-        IERC20 usdt  = IERC20(addresses[2]);
+    function exchangeDinarUsdt(bool forward, uint256 amount) public {
+        require(amount < maxExchangeDinarUsdt(forward), "too much");
         if (forward) {
-            lp.burnFrom(msg.sender, amount);
-            require(usdt.transfer(msg.sender, amount));
+            require(IERC20(addresses[3]).transferFrom(msg.sender, address(this), amount));
+            require(IERC20(addresses[2]).transfer(msg.sender, amount));
         } else {
-            lp.mint(msg.sender, amount);
-            require(usdt.transferFrom(msg.sender, address(this), amount));
+            require(IERC20(addresses[2]).transferFrom(msg.sender, address(this), amount));
+            require(IERC20(addresses[3]).transfer(msg.sender, amount));
         }
-        emit eventExchangeLpToUsdt(forward, amount, msg.sender);
+        emit eventExchangeDinarToUsdt(forward, amount, msg.sender);
     }
 
     function releaseAbleLiquidReward(address provider) public view returns (uint256) {
@@ -145,8 +212,7 @@ contract Loan is Context {
         uint256 amount = liquidReward[msg.sender];
         require(amount > 0, "no reward");
         uint256 fee = params[2];
-        IERC20 usdt  = IERC20(addresses[2]);
-        usdt.transfer(msg.sender, amount - fee);
+        IERC20(addresses[2]).transfer(msg.sender, amount - fee);
         liquidReward[msg.sender] -= amount;
         emit eventReleaseLiquidReward(amount, msg.sender, fee);
     }
@@ -166,31 +232,31 @@ contract Loan is Context {
 
     function provideUsdt(uint256 amount, uint256 duration) public {
         require(amount >= params[3] && amount <= params[4], "exceed limit");
-        IERC20 erc20Token = IERC20(addresses[2]);
-        require(erc20Token.transferFrom(msg.sender, address(this), amount));
+        require(IERC20(addresses[2]).transferFrom(msg.sender, address(this), amount));
         uint256 newId = params[1];
         uint256 current = block.timestamp;
+        string memory contractNumber = updateNextContractNumber(2);
         liquidProvide memory newlp = liquidProvide(
             amount,
             duration,
             current,
             0,
-            msg.sender
+            msg.sender,
+            contractNumber
         );
         liquidProvides[newId] = newlp;
         params[1] = newId + 1;
         params[0] += amount;
-        emit eventProviderAdd(current, duration, current, amount, msg.sender);
+        emit eventProviderAdd(current, duration, current, amount, msg.sender, contractNumber);
     }
 
     function retrieveUsdt(uint256 provideId) public {
-        IERC20 erc20Token = IERC20(addresses[2]);
         uint256 amount = liquidProvides[provideId].amount;
         uint256 releaseAmount = amount;
         if (liquidProvides[provideId].start + liquidProvides[provideId].duration < block.timestamp) {
             releaseAmount = amount * 97 / 100;
         }
-        require(erc20Token.transfer(msg.sender, releaseAmount));
+        require(IERC20(addresses[2]).transfer(msg.sender, releaseAmount));
         liquidProvides[provideId].status = 1;
         params[0] -= amount;
         emit eventProviderRedeem(provideId, amount, msg.sender, amount - releaseAmount);
@@ -203,9 +269,92 @@ contract Loan is Context {
         emit eventClear(loanId, loans[loanId].loanAmount, loans[loanId].loaner);
     }
 
+    function finishClear(uint256 loanId, uint256 clearAmount) public onlyCaller() {
+        require(loans[loanId].status == 2);
+        DINARToken(addresses[3]).burn(clearAmount);
+        loans[loanId].status = 3;
+        emit eventFinishClear(loanId, loans[loanId].loanAmount, clearAmount);
+    }
+
     function extract(address token) public onlyOwner() {
-        IERC20 erc20Token = IERC20(token);
-        require(erc20Token.transfer(msg.sender, erc20Token.balanceOf(address(this))));
+        require(IERC20(token).transfer(msg.sender, IERC20(token).balanceOf(address(this))));
+    }
+
+    // 1 loan
+    // 2 provide liquidity
+    function updateNextContractNumber(uint256 type_) internal returns(string memory) {
+        require(type_ == 1 || type_ == 2, "nor allowed");
+        uint256 beginOfToday = block.timestamp - block.timestamp % 86400;
+        if (type_ == 1) {
+            if (beginOfToday == params[5]) {
+                params[6] = params[6] + 1;
+            } else {
+                params[5] = beginOfToday;
+                params[6] = 1;
+            }
+            string memory extra0 = "";
+            if (params[6] < 10) {
+                extra0 = "0000";
+            } else if (params[6] >= 10 && params[6] < 100) {
+                extra0 = "000";
+            } else if (params[6] >= 100 && params[6] < 1000) {
+                extra0 = "00";
+            } else if (params[6] >= 1000 && params[6] < 10000) {
+                extra0 = "0";
+            }
+            return concat(concat(concat(concat("L", uintToString(params[5])), extra0), uintToString(params[6])), "P2P");
+        } else if (type_ == 2) {
+            if (beginOfToday == params[7]) {
+                params[8] = params[8] + 1;
+            } else {
+                params[7] = beginOfToday;
+                params[6] = 1;
+            }
+            string memory extra0 = "";
+            if (params[8] < 10) {
+                extra0 = "0000";
+            } else if (params[8] >= 10 && params[8] < 100) {
+                extra0 = "000";
+            } else if (params[8] >= 100 && params[8] < 1000) {
+                extra0 = "00";
+            } else if (params[8] >= 1000 && params[8] < 10000) {
+                extra0 = "0";
+            }
+            return concat(concat(concat(concat("LP", uintToString(params[7])), extra0), uintToString(params[8])), "P2P");
+        }
+        return "";
+    }
+
+    function uintToString(uint256 value) internal pure returns (string memory) {
+        if (value == 0) {
+            return "0";
+        }
+        uint256 temp = value;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+        bytes memory buffer = new bytes(digits);
+        while (value != 0) {
+            digits--;
+            buffer[digits] = bytes1(uint8(48 + (value % 10)));
+            value /= 10;
+        }
+        return string(buffer);
+    }
+
+    function concat(string memory a, string memory b) internal pure returns (string memory) {
+        bytes memory ba = bytes(a);
+        bytes memory bb = bytes(b);
+        string memory result = new string(ba.length + bb.length);
+        bytes memory br = bytes(result);
+
+        uint k = 0;
+        for (uint i = 0; i < ba.length; i++) br[k++] = ba[i];
+        for (uint i = 0; i < bb.length; i++) br[k++] = bb[i];
+
+        return string(br);
     }
 
 }

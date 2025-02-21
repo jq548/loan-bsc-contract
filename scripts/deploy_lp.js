@@ -1,6 +1,6 @@
   
   async function main() {
-    const LPToken = await ethers.getContractFactory("LPToken");
+    const LPToken = await ethers.getContractFactory("DINARToken");
     console.log("Deploying LPToken...");
     const lp = await LPToken.deploy("1000000000000000000000000");
     sleep(6);

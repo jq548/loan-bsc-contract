@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 async function main() {
-  const contractAddress = "0xe1354798516b08D65160CA5CB2C409b166699013";
+  const contractAddress = process.env.LOAN;
   const LoanContract = await hre.ethers.getContractFactory("Loan");
   const loanContract = await LoanContract.attach(contractAddress);
 
